@@ -1,44 +1,52 @@
 let wins = 0;
 let losses = 0;
 let guessesLeft = 9;
+let computerChoice = null;
 let usersLettersSelected = [];
 const alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 
 const compLetterSelecter = () => {
-  const computerChoice = Math.floor(Math.random() * alphabet.length)
-  return alphabet[computerChoice];
+  computerChoice = alphabet[Math.floor(Math.random() * alphabet.length)];
 };
 
-document.onkeyup = (event) => {
-  userSelect = event.key.toLowerCase();
-  computerLetter = compLetterSelecter();
-  usersLettersSelected.push(userSelect);
+const updateGuessesLeft = () => {
+  document.getElementById('guesses').innerHTML = guessesLeft;
+};
 
-  for (let element of alphabet) {
+const guessesSoFar = () => {
+  document.getElementById('letters').innerHTML = usersLettersSelected.join(', ');
+};
 
-    if (userSelect == element) {
+const reset = () => {
+  guessesLeft = 9;
+  usersLettersSelected = [];
+  compLetterSelecter();
+  updateGuessesLeft();
+  guessesSoFar();
+};
 
-      if (userSelect == computerLetter) {
-        wins++;
-        guessesLeft = 9;
-        document.getElementById('wins').innerHTML = wins;
-        document.getElementById('guesses').innerHTML = guessesLeft;
-        usersLettersSelected = [];
-        document.getElementById('letters').innerHTML = usersLettersSelected;
-      }
-      else {
-        guessesLeft--;
-        document.getElementById('guesses').innerHTML = guessesLeft;
-        document.getElementById('letters').innerHTML = usersLettersSelected.join(', ');
-        if (guessesLeft == 0) {
-          losses++;
-          document.getElementById('losses').innerHTML = losses;
-          guessesLeft = 9;
-          document.getElementById('guesses').innerHTML = guessesLeft;
-          usersLettersSelected = [];
-          document.getElementById('letters').innerHTML = usersLettersSelected
-        }
-      }
+compLetterSelecter();
+updateGuessesLeft();
+
+document.onkeydown = (event) => {
+  if (event.which <= 90 && event.which >= 65) {
+    guessesLeft--;
+    let letter = String.fromCharCode(event.which).toLowerCase();
+
+    usersLettersSelected.push(letter);
+
+    updateGuessesLeft();
+    guessesSoFar();
+
+    if (letter === computerChoice) {
+      wins++;
+      document.getElementById('wins').innerHTML = wins;
+      reset();
+    }
+    if (guessesLeft === 0) {
+      losses++;
+      document.getElementById('losses').innerHTML = losses;
+      reset();
     }
   }
 }
